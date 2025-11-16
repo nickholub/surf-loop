@@ -1,6 +1,7 @@
 // Constants
 const PAGE_ROTATION_DELAY = 3 * 60 * 1000;
 //const PAGE_ROTATION_DELAY = 10 * 1000; // 10 seconds, dev testing
+const FULLSCREEN_BUTTON_WAIT_TIMEOUT = 60 * 1000; // 60 seconds
 const urls = [
   "https://www.surfline.com/surf-report/linda-mar-north/5cbf8d85e7b15800014909e8?camId=58349ea8e411dc743a5d52c7",
   "https://www.surfline.com/surf-report/cowells/5842041f4e65fad6a7708806?camId=583497a03421b20545c4b532",
@@ -71,11 +72,11 @@ function waitForFullscreenButton() {
     }
   }, 500);
 
-  // Stop checking after 10 seconds
+  // Stop checking after timeout
   stopCheckTimeoutId = setTimeout(() => {
     teardownListeners();
     console.log('Stopped looking for fullscreen button');
-  }, 10000);
+  }, FULLSCREEN_BUTTON_WAIT_TIMEOUT);
 }
 
 // Execute when jQuery and DOM are ready
