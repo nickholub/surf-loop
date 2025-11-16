@@ -39,6 +39,7 @@ function teardownListeners() {
 }
 
 function customCode() {
+  console.log('customCode')
   videoPlayerWrapper = $('.CamPlayerKbygRewinds_playerWrapper__bWm7U');
   videoWrapper = videoPlayerWrapper.children('div').eq(1);
 
