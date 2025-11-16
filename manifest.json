@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Surfline",
+  "version": "1.0",
+  "description": "Surfline Webcam",
+  "content_scripts": [
+    {
+      "matches": ["https://www.surfline.com/surf-report/linda-mar-north/5cbf8d85e7b15800014909e8?camId=58349ea8e411dc743a5d52c7"],
+      "js": ["jquery.min.js", "content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
