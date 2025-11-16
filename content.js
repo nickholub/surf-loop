@@ -1,30 +1,18 @@
+// Constants
+const PAGE_ROTATION_DELAY = 3 * 60 * 1000;
+//const PAGE_ROTATION_DELAY = 10 * 1000; // 10 seconds, dev testing
+const urls = [
+  "https://www.surfline.com/surf-report/linda-mar-north/5cbf8d85e7b15800014909e8?camId=58349ea8e411dc743a5d52c7",
+  "https://www.surfline.com/surf-report/cowells/5842041f4e65fad6a7708806?camId=583497a03421b20545c4b532",
+  "https://www.surfline.com/surf-report/steamer-lane/5842041f4e65fad6a7708805?camId=63726f8a5cd4988578c5179b",
+  "https://www.surfline.com/surf-report/maverick-s/5842041f4e65fad6a7708801?camId=60957ad32272016445d45b2c",
+  "https://www.surfline.com/surf-report/half-moon-bay/5842041f4e65fad6a770896f"
+];
+
 let latestFullscreenButton = null;
 let userGestureCaptured = false;
 let checkIntervalId = null;
 let stopCheckTimeoutId = null;
-
-function attemptFullscreenTrigger() {
-  if (!userGestureCaptured || !latestFullscreenButton) {
-    return;
-  }
-
-  console.log('Attempting to enter fullscreen via user gesture...');
-  latestFullscreenButton.trigger('click');
-  teardownListeners();
-}
-
-function handleUserGesture() {
-  userGestureCaptured = true;
-  attemptFullscreenTrigger();
-}
-
-function setupUserGestureListeners() {
-  // Capture the first real user action (click or key press) so fullscreen is gesture-initiated.
-  document.addEventListener('click', handleUserGesture, { once: true, capture: true });
-  document.addEventListener('keydown', handleUserGesture, { once: true, capture: true });
-
-
-}
 
 function teardownListeners() {
   if (checkIntervalId) {
@@ -40,7 +28,7 @@ function teardownListeners() {
 
 function customCode() {
   console.log('customCode')
-  videoPlayerWrapper = $('.CamPlayerKbygRewinds_playerWrapper__bWm7U');
+  videoPlayerWrapper = $('div[class*="CamPlayerKbygRewinds_playerWrapper"]');
   videoWrapper = videoPlayerWrapper.children('div').eq(1);
 
   console.log('videoWrapper');
@@ -74,13 +62,12 @@ function waitForFullscreenButton() {
 
   // Check every 500ms for the button
   checkIntervalId = setInterval(() => {
-    const $fullscreenButton = $('button.FullscreenControl_fullscreenControl__2Rv8C');
+    const $fullscreenButton = $('button[class*="FullscreenControl_fullscreenControl"]');
 
     if ($fullscreenButton.length > 0) {
-      latestFullscreenButton = $fullscreenButton;
-      console.log('Found fullscreen button, waiting for user gesture to trigger...');
+      console.log('Found fullscreen button', $fullscreenButton);
+      teardownListeners();
       customCode()
-      attemptFullscreenTrigger();
     }
   }, 500);
 
@@ -93,6 +80,14 @@ function waitForFullscreenButton() {
 
 // Execute when jQuery and DOM are ready
 $(function() {
-  setupUserGestureListeners();
   waitForFullscreenButton();
+
+  // Navigate to next page after delay
+  setTimeout(function() {
+    const currentUrl = window.location.href;
+    const currentIndex = urls.findIndex(url => currentUrl.includes(url));
+    const nextIndex = (currentIndex + 1) % urls.length;
+
+    window.location.href = urls[nextIndex];
+  }, PAGE_ROTATION_DELAY);
 });
