@@ -5,7 +5,13 @@
   "description": "Surfline Webcam",
   "content_scripts": [
     {
-      "matches": ["https://www.surfline.com/surf-report/linda-mar-north/5cbf8d85e7b15800014909e8?camId=58349ea8e411dc743a5d52c7"],
+      "matches": [
+        "https://www.surfline.com/surf-report/linda-mar-north/5cbf8d85e7b15800014909e8?camId=58349ea8e411dc743a5d52c7",
+        "https://www.surfline.com/surf-report/cowells/5842041f4e65fad6a7708806?camId=583497a03421b20545c4b532",
+        "https://www.surfline.com/surf-report/steamer-lane/5842041f4e65fad6a7708805?camId=63726f8a5cd4988578c5179b",
+        "https://www.surfline.com/surf-report/maverick-s/5842041f4e65fad6a7708801?camId=60957ad32272016445d45b2c",
+        "https://www.surfline.com/surf-report/half-moon-bay/5842041f4e65fad6a770896f"
+      ],
       "js": ["jquery.min.js", "content.js"],
       "run_at": "document_end"
     }
