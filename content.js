@@ -1,6 +1,6 @@
 // Constants
 const PAGE_ROTATION_DELAY = 3 * 60 * 1000;
-//const PAGE_ROTATION_DELAY = 10 * 1000; // 10 seconds, dev testing
+// const PAGE_ROTATION_DELAY = 10 * 1000; // 10 seconds, dev testing
 const FULLSCREEN_BUTTON_WAIT_TIMEOUT = 60 * 1000; // 60 seconds
 const urlsSFBay = [
   "https://www.surfline.com/surf-report/linda-mar-north/5cbf8d85e7b15800014909e8?camId=58349ea8e411dc743a5d52c7",
@@ -38,11 +38,6 @@ function teardownListeners() {
   if (stopCheckTimeoutId) {
     clearTimeout(stopCheckTimeoutId);
     stopCheckTimeoutId = null;
-  }
-
-  if (pageRotationTimeoutId) {
-    clearTimeout(pageRotationTimeoutId);
-    pageRotationTimeoutId = null;
   }
 }
 
@@ -150,6 +145,7 @@ $(function() {
 
   // Navigate to next page after delay
   pageRotationTimeoutId = setTimeout(function() {
+    console.log('Navigating to next page after delay');
     const currentIndex = urls.findIndex(url => currentUrl.includes(url));
     const nextIndex = (currentIndex + 1) % urls.length;
 
