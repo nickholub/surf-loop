@@ -2,7 +2,7 @@
 const PAGE_ROTATION_DELAY = 3 * 60 * 1000;
 //const PAGE_ROTATION_DELAY = 10 * 1000; // 10 seconds, dev testing
 const FULLSCREEN_BUTTON_WAIT_TIMEOUT = 60 * 1000; // 60 seconds
-const urls = [
+const urlsSFBay = [
   "https://www.surfline.com/surf-report/linda-mar-north/5cbf8d85e7b15800014909e8?camId=58349ea8e411dc743a5d52c7",
   "https://www.surfline.com/surf-report/cowells/5842041f4e65fad6a7708806?camId=583497a03421b20545c4b532",
   "https://www.surfline.com/surf-report/steamer-lane/5842041f4e65fad6a7708805?camId=63726f8a5cd4988578c5179b",
@@ -10,10 +10,24 @@ const urls = [
   "https://www.surfline.com/surf-report/half-moon-bay/5842041f4e65fad6a770896f"
 ];
 
+const urlsHawaii = [
+  "https://www.surfline.com/surf-report/pipeline/5842041f4e65fad6a7708890?camId=58349eed3421b20545c4b56c",
+  "https://www.surfline.com/surf-report/waikiki-beach/584204204e65fad6a7709148?camId=5d24cc0b3ea3012c99da7808",
+  "https://www.surfline.com/surf-report/laniakea/5842041f4e65fad6a7708898?camId=58349bb9e411dc743a5d52a6",
+  "https://www.surfline.com/surf-report/honolua-bay/5842041f4e65fad6a7708897?camId=58349946e411dc743a5d52b0"
+];
+
+var urls = urlsHawaii;
+
 let latestFullscreenButton = null;
 let userGestureCaptured = false;
 let checkIntervalId = null;
 let stopCheckTimeoutId = null;
+let pageRotationTimeoutId = null;
+let videoWrapper = null;
+let videoPlayerWrapper = null;
+let originalParent = null;
+let originalIndex = null;
 
 function teardownListeners() {
   if (checkIntervalId) {
@@ -25,6 +39,38 @@ function teardownListeners() {
     clearTimeout(stopCheckTimeoutId);
     stopCheckTimeoutId = null;
   }
+
+  if (pageRotationTimeoutId) {
+    clearTimeout(pageRotationTimeoutId);
+    pageRotationTimeoutId = null;
+  }
+}
+
+function removeOverlay() {
+  console.log('Removing overlay and restoring video wrapper...');
+
+  // Clear all timeouts and intervals
+  teardownListeners();
+
+  const $overlay = $('#video-overlay');
+  if ($overlay.length > 0 && originalParent && videoWrapper) {
+    // Remove custom styles from video wrapper
+    videoWrapper.css({
+      'width': '',
+      'height': ''
+    });
+
+    // Restore to original position
+    if (originalIndex !== null && originalIndex < originalParent.children().length) {
+      videoWrapper.insertBefore(originalParent.children().eq(originalIndex));
+    } else {
+      originalParent.append(videoWrapper);
+    }
+
+    // Remove the overlay
+    $overlay.remove();
+    console.log('Video wrapper restored to original position');
+  }
 }
 
 function customCode() {
@@ -34,6 +80,10 @@ function customCode() {
 
   console.log('videoWrapper');
   console.log(videoWrapper);
+
+  // Save original parent and position
+  originalParent = videoWrapper.parent();
+  originalIndex = originalParent.children().index(videoWrapper);
 
   // Create overlay container
   const $overlay = $('<div id="video-overlay"></div>');
@@ -81,10 +131,26 @@ function waitForFullscreenButton() {
 
 // Execute when jQuery and DOM are ready
 $(function() {
+  // Check if current URL is in the urls list
+  const currentUrl = window.location.href;
+  const urlFound = urls.some(url => currentUrl.includes(url));
+
+  if (!urlFound) {
+    console.log('Current URL not in urls list, exiting...');
+    return;
+  }
+
   waitForFullscreenButton();
 
+  // Listen for ESC key to remove overlay
+  $(document).on('keydown', function(e) {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      removeOverlay();
+    }
+  });
+
   // Navigate to next page after delay
-  setTimeout(function() {
+  pageRotationTimeoutId = setTimeout(function() {
     const currentUrl = window.location.href;
     const currentIndex = urls.findIndex(url => currentUrl.includes(url));
     const nextIndex = (currentIndex + 1) % urls.length;
