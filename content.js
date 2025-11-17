@@ -124,6 +124,8 @@ function waitForFullscreenButton() {
   }, FULLSCREEN_BUTTON_WAIT_TIMEOUT);
 }
 
+console.log('global init');
+
 // Execute when jQuery and DOM are ready
 $(function() {
   console.log('jQuery and DOM are ready');

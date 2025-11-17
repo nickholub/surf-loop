@@ -6,7 +6,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.surfline.com/surf-report/*?camId=*"
+        "https://www.surfline.com/surf-report/*"
       ],
       "js": ["jquery.min.js", "content.js"],
       "run_at": "document_end"
