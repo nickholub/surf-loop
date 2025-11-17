@@ -132,9 +132,9 @@ function waitForFullscreenButton() {
 // Execute when jQuery and DOM are ready
 $(function() {
   console.log('jQuery and DOM are ready');
-  
+
   const currentUrl = window.location.href;
-  if (!urls.contains(currentUrl)) {
+  if (!urls.includes(currentUrl)) {
     console.log('Current URL is not in the list of URLs', currentUrl);
     return;
   }
