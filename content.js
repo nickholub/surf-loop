@@ -131,12 +131,11 @@ function waitForFullscreenButton() {
 
 // Execute when jQuery and DOM are ready
 $(function() {
-  // Check if current URL is in the urls list
+  console.log('jQuery and DOM are ready');
+  
   const currentUrl = window.location.href;
-  const urlFound = urls.some(url => currentUrl.includes(url));
-
-  if (!urlFound) {
-    console.log('Current URL not in urls list, exiting...');
+  if (!urls.contains(currentUrl)) {
+    console.log('Current URL is not in the list of URLs', currentUrl);
     return;
   }
 
@@ -151,7 +150,6 @@ $(function() {
 
   // Navigate to next page after delay
   pageRotationTimeoutId = setTimeout(function() {
-    const currentUrl = window.location.href;
     const currentIndex = urls.findIndex(url => currentUrl.includes(url));
     const nextIndex = (currentIndex + 1) % urls.length;
 
