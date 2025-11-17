@@ -17,7 +17,7 @@ const urlsHawaii = [
   "https://www.surfline.com/surf-report/honolua-bay/5842041f4e65fad6a7708897?camId=58349946e411dc743a5d52b0"
 ];
 
-var urls = urlsHawaii;
+var urls = urlsSFBay;
 
 let latestFullscreenButton = null;
 let userGestureCaptured = false;
