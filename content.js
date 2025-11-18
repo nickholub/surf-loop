@@ -11,13 +11,11 @@ const urlsSFBay = [
 ];
 
 const urlsHawaii = [
-  "https://www.surfline.com/surf-report/pipeline/5842041f4e65fad6a7708890?camId=58349eed3421b20545c4b56c",
+  "https://www.surfline.com/surf-report/pipeline/5842041f4e65fad6a7708890?camId=58349ef6e411dc743a5d52cc",
   "https://www.surfline.com/surf-report/waikiki-beach/584204204e65fad6a7709148?camId=5d24cc0b3ea3012c99da7808",
   "https://www.surfline.com/surf-report/laniakea/5842041f4e65fad6a7708898?camId=58349bb9e411dc743a5d52a6",
   "https://www.surfline.com/surf-report/honolua-bay/5842041f4e65fad6a7708897?camId=58349946e411dc743a5d52b0"
 ];
-
-var urls = urlsSFBay;
 
 let latestFullscreenButton = null;
 let userGestureCaptured = false;
@@ -130,18 +128,35 @@ console.log('global init');
 $(function() {
   console.log('jQuery and DOM are ready');
 
+  var urls;
   const currentUrl = window.location.href;
-  if (!urls.includes(currentUrl)) {
+  if (urlsSFBay.includes(currentUrl)) {
+    urls = urlsSFBay;
+  } else if (urlsHawaii.includes(currentUrl)) {
+    urls = urlsHawaii;
+  } else {
     console.log('Current URL is not in the list of URLs', currentUrl);
     return;
   }
 
   waitForFullscreenButton();
 
-  // Listen for ESC key to remove overlay
+  // Listen for keyboard events
   $(document).on('keydown', function(e) {
     if (e.key === 'Escape' || e.keyCode === 27) {
       removeOverlay();
+    } else if (e.key === 'ArrowLeft') {
+      // Navigate to previous page
+      console.log('Navigating to previous page');
+      const currentIndex = urls.findIndex(url => currentUrl.includes(url));
+      const prevIndex = (currentIndex - 1 + urls.length) % urls.length;
+      window.location.href = urls[prevIndex];
+    } else if (e.key === 'ArrowRight') {
+      // Navigate to next page
+      console.log('Navigating to next page');
+      const currentIndex = urls.findIndex(url => currentUrl.includes(url));
+      const nextIndex = (currentIndex + 1) % urls.length;
+      window.location.href = urls[nextIndex];
     }
   });
 
