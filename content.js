@@ -27,6 +27,7 @@ let videoWrapper = null;
 let videoPlayerWrapper = null;
 let originalParent = null;
 let originalIndex = null;
+let autoNavigationEnabled = true;
 
 function teardownListeners() {
   if (checkIntervalId) {
@@ -176,6 +177,30 @@ $(function() {
 
   waitForFullscreenButton();
 
+  // Function to start auto navigation
+  function startAutoNavigation() {
+    if (!autoNavigationEnabled || pageRotationTimeoutId) {
+      return;
+    }
+
+    pageRotationTimeoutId = setTimeout(function() {
+      console.log('Navigating to next page after delay');
+      const nextIndex = (currentIndex + 1) % urls.length;
+      window.location.href = urls[nextIndex];
+    }, PAGE_ROTATION_DELAY);
+
+    console.log('Auto navigation enabled');
+  }
+
+  // Function to stop auto navigation
+  function stopAutoNavigation() {
+    if (pageRotationTimeoutId) {
+      clearTimeout(pageRotationTimeoutId);
+      pageRotationTimeoutId = null;
+    }
+    console.log('Auto navigation disabled');
+  }
+
   // Listen for keyboard events
   $(document).on('keydown', function(e) {
     if (e.key === 'Escape') {
@@ -190,13 +215,18 @@ $(function() {
       console.log('Navigating to next page');
       const nextIndex = (currentIndex + 1) % urls.length;
       window.location.href = urls[nextIndex];
+    } else if (e.key === 's' || e.key === 'S') {
+      // Toggle auto navigation
+      autoNavigationEnabled = !autoNavigationEnabled;
+
+      if (autoNavigationEnabled) {
+        startAutoNavigation();
+      } else {
+        stopAutoNavigation();
+      }
     }
   });
 
-  // Navigate to next page after delay
-  pageRotationTimeoutId = setTimeout(function() {
-    console.log('Navigating to next page after delay');
-    const nextIndex = (currentIndex + 1) % urls.length;
-    window.location.href = urls[nextIndex];
-  }, PAGE_ROTATION_DELAY);
+  // Start auto navigation
+  startAutoNavigation();
 });
