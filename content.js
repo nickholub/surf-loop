@@ -6,6 +6,8 @@ const CONFIG = {
   // PAGE_ROTATION_DELAY: 10 * 1000, // 10 seconds, dev testing
   FULLSCREEN_BUTTON_WAIT_TIMEOUT: 60 * 1000,
   FULLSCREEN_BUTTON_CHECK_INTERVAL: 500,
+  TOAST_DISPLAY_DURATION: 2000,
+  DISABLED_PAGE_REFRESH_DELAY: 10 * 60 * 1000,
 
   OVERLAY_STYLES: {
     'position': 'fixed',
@@ -21,11 +23,33 @@ const CONFIG = {
     'height': '100%'
   },
 
+  TOAST_STYLES: {
+    'position': 'fixed',
+    'left': '50%',
+    'top': '24px',
+    'transform': 'translateX(-50%)',
+    'background': '#0f172a',
+    'color': '#f8fafc',
+    'padding': '14px 18px',
+    'border-radius': '12px',
+    'box-shadow': '0 4px 16px rgba(0, 0, 0, 0.25)',
+    'font-family': 'Arial, sans-serif',
+    'font-size': '16px',
+    'opacity': '0',
+    'transition': 'opacity 150ms ease-in-out',
+    'pointer-events': 'none',
+    'z-index': '2147483648'
+  },
+
   SELECTORS: {
     VIDEO_PLAYER_WRAPPER: 'div[class*="CamPlayerKbygRewinds_playerWrapper"]',
     FULLSCREEN_BUTTON: 'button[class*="FullscreenControl_fullscreenControl"]',
     VIDEO_OVERLAY: '#video-overlay'
   }
+};
+
+const STORAGE_KEYS = {
+  AUTO_NAV_ENABLED: 'surfline-auto-navigation-enabled'
 };
 
 const URL_GROUPS = {
@@ -58,6 +82,8 @@ const State = {
   originalParent: null,
   originalIndex: null,
   autoNavigationEnabled: true,
+  toastTimeoutId: null,
+  refreshTimeoutId: null,
 
   clear() {
     if (this.checkIntervalId) {
@@ -72,6 +98,40 @@ const State = {
       clearTimeout(this.pageRotationTimeoutId);
       this.pageRotationTimeoutId = null;
     }
+
+    if (this.toastTimeoutId) {
+      clearTimeout(this.toastTimeoutId);
+      this.toastTimeoutId = null;
+    }
+  }
+};
+
+// ============================================================================
+// TOAST MODULE
+// ============================================================================
+const Toast = {
+  $el: null,
+
+  ensureElement() {
+    if (this.$el) return;
+    this.$el = $('<div id="surfline-toast"></div>');
+    this.$el.css(CONFIG.TOAST_STYLES);
+    $('body').append(this.$el);
+  },
+
+  show(message) {
+    this.ensureElement();
+    this.$el.text(message);
+    this.$el.css('opacity', '1');
+
+    if (State.toastTimeoutId) {
+      clearTimeout(State.toastTimeoutId);
+    }
+
+    State.toastTimeoutId = setTimeout(() => {
+      this.$el.css('opacity', '0');
+      State.toastTimeoutId = null;
+    }, CONFIG.TOAST_DISPLAY_DURATION);
   }
 };
 
@@ -243,13 +303,55 @@ const AutoNavigation = {
     console.log('Auto navigation disabled');
   },
 
+  scheduleRefresh() {
+    if (State.refreshTimeoutId) {
+      clearTimeout(State.refreshTimeoutId);
+    }
+
+    State.refreshTimeoutId = setTimeout(() => {
+      window.location.reload();
+    }, CONFIG.DISABLED_PAGE_REFRESH_DELAY);
+  },
+
+  cancelRefresh() {
+    if (State.refreshTimeoutId) {
+      clearTimeout(State.refreshTimeoutId);
+      State.refreshTimeoutId = null;
+    }
+  },
+
+  loadState() {
+    try {
+      const storedValue = localStorage.getItem(STORAGE_KEYS.AUTO_NAV_ENABLED);
+      if (storedValue === 'false') {
+        State.autoNavigationEnabled = false;
+        this.scheduleRefresh();
+      }
+    } catch (error) {
+      console.error('Error loading auto navigation state', error);
+    }
+  },
+
+  persistState() {
+    try {
+      localStorage.setItem(STORAGE_KEYS.AUTO_NAV_ENABLED, String(State.autoNavigationEnabled));
+    } catch (error) {
+      console.error('Error saving auto navigation state', error);
+    }
+  },
+
   toggle() {
     State.autoNavigationEnabled = !State.autoNavigationEnabled;
+    this.persistState();
 
     if (State.autoNavigationEnabled) {
       this.start();
+      Toast.show('Auto navigation on');
+      this.cancelRefresh();
     } else {
       this.stop();
+      Toast.show('Auto navigation off');
+      this.scheduleRefresh();
     }
   }
 };
@@ -295,6 +397,7 @@ $(function() {
   }
 
   // Start modules
+  AutoNavigation.loadState();
   FullscreenButtonDetector.start();
   KeyboardHandler.init();
   AutoNavigation.start();
