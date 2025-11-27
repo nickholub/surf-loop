@@ -3,6 +3,7 @@
 // ============================================================================
 const CONFIG = {
   PAGE_ROTATION_DELAY: 3 * 60 * 1000,
+  DEBUG: false, // Set to true to enable debug logging
   // PAGE_ROTATION_DELAY: 10 * 1000, // 10 seconds, dev testing
   FULLSCREEN_BUTTON_WAIT_TIMEOUT: 60 * 1000,
   FULLSCREEN_BUTTON_CHECK_INTERVAL: 500,
@@ -15,12 +16,21 @@ const CONFIG = {
     'left': '0',
     'width': '100%',
     'height': '100%',
-    'z-index': '2147483647'
+    'z-index': '2147483647',
+    'display': 'flex',
+    'justify-content': 'center',
+    'align-items': 'center',
+    'background': '#000'
   },
 
   VIDEO_WRAPPER_STYLES: {
-    'width': '100%',
-    'height': '100%'
+    // Force 16:9 aspect ratio while fitting within the viewport
+    // width = min(100% of width, 16/9 of height)
+    'width': 'min(100%, 177.78vh)',
+    // height = min(100% of height, 9/16 of width)
+    'height': 'min(100%, 56.25vw)',
+    'position': 'relative',
+    //'border': '1px solid red'
   },
 
   TOAST_STYLES: {
@@ -143,6 +153,36 @@ const VideoOverlay = {
     console.log('makeVideoFullScreen');
 
     try {
+      if (CONFIG.DEBUG) {
+        const $video = $('video');
+        if ($video.length > 0) {
+          const videoEl = $video[0];
+          // Wait for metadata if dimensions are 0 (common if video just loaded)
+          if (videoEl.readyState >= 1) {
+            const width = videoEl.videoWidth;
+            const height = videoEl.videoHeight;
+            const ratio = width / height;
+            console.log('--- VIDEO DIMENSIONS ---');
+            console.log(`Intrinsic Width: ${width}px`);
+            console.log(`Intrinsic Height: ${height}px`);
+            console.log(`Aspect Ratio: ${ratio.toFixed(4)}`);
+            console.log('------------------------');
+          } else {
+            console.log('Video metadata not yet loaded');
+            videoEl.addEventListener('loadedmetadata', () => {
+              console.log('--- VIDEO DIMENSIONS (Delayed) ---');
+              console.log(`Intrinsic Width: ${videoEl.videoWidth}px`);
+              console.log(`Intrinsic Height: ${videoEl.videoHeight}px`);
+              console.log(`Aspect Ratio: ${videoEl.videoWidth / videoEl.videoHeight}`);
+            });
+          }
+
+          $video.css({
+            'border': '5px solid blue'
+          });
+        }
+      }
+
       State.videoPlayerWrapper = $(CONFIG.SELECTORS.VIDEO_PLAYER_WRAPPER);
 
       if (State.videoPlayerWrapper.length === 0) {
@@ -362,7 +402,7 @@ const AutoNavigation = {
 const KeyboardHandler = {
   init() {
     $(document).on('keydown', (e) => {
-      switch(e.key) {
+      switch (e.key) {
         case 'Escape':
           VideoOverlay.remove();
           break;
@@ -386,7 +426,7 @@ const KeyboardHandler = {
 // ============================================================================
 console.log('global init');
 
-$(function() {
+$(function () {
   console.log('jQuery and DOM are ready');
 
   const currentUrl = window.location.href;
