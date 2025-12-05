@@ -8,7 +8,9 @@
       "matches": [
         "https://www.surfline.com/surf-report/*"
       ],
-      "js": ["jquery.min.js", "content.js"],
+      "js": [
+        "src/content.js"
+      ],
       "run_at": "document_end"
     }
   ]
