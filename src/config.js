@@ -62,6 +62,7 @@ export const STORAGE_KEYS = {
 export const URL_GROUPS = {
     SF_BAY: [
         "https://www.surfline.com/surf-report/linda-mar-north/5cbf8d85e7b15800014909e8?camId=58349ea8e411dc743a5d52c7",
+        "https://www.surfline.com/surf-report/south-ocean-beach/5842041f4e65fad6a77087f9?camId=615dd986de7d8059b38a053f",
         "https://www.surfline.com/surf-report/pleasure-point/5842041f4e65fad6a7708807?camId=5cf0124c4f41df57b971a9a4",
         "https://www.surfline.com/surf-report/cowells/5842041f4e65fad6a7708806?camId=583497a03421b20545c4b532",
         "https://www.surfline.com/surf-report/steamer-lane/5842041f4e65fad6a7708805?camId=63726f8a5cd4988578c5179b",
