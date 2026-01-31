@@ -6,7 +6,7 @@ A Chrome extension that transforms Surfline surf report pages into a fullscreen 
 
 - **Fullscreen Webcam View**: Automatically detects and expands the webcam player to fill your screen with a clean 16:9 aspect ratio
 - **Auto-Rotation**: Cycles through configured surf spots on a timer (default: 3 minutes)
-- **Location Groups**: Organize spots into groups (e.g., "SF Bay", "Hawaii") - rotation stays within the current group
+- **Location Groups**: Organize spots into groups (e.g., "SF Bay", "Oahu") - rotation stays within the current group
 - **Configurable Settings**: Add, edit, and remove spots through the extension's options page
 - **Sync Across Devices**: Settings sync via Chrome's storage API to all your logged-in browsers
 - **Import/Export**: Backup and share your spot configurations as JSON
@@ -66,7 +66,7 @@ The extension comes pre-configured with spots in two groups:
 
 **SF Bay**: Linda Mar, Ocean Beach, Pleasure Point, Cowells, Steamer Lane, Mavericks, Half Moon Bay
 
-**Hawaii**: Pipeline, Waikiki Beach, Laniakea, Honolua Bay
+**Oahu**: Pipeline, Waikiki Beach, Laniakea, Honolua Bay
 
 ## Configuration Format
 
