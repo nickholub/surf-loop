@@ -39,7 +39,8 @@ npm run dev
 
 1. Navigate to any Surfline surf report page (e.g., https://www.surfline.com/surf-report/pipeline/...)
 2. The extension automatically activates and displays the webcam in fullscreen
-3. Use keyboard shortcuts to control playback
+3. **For the best experience, maximize your Chrome browser** (F11 or View → Enter Full Screen)
+4. Use keyboard shortcuts to control playback
 
 ### Keyboard Shortcuts
 
