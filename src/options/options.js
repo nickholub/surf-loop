@@ -51,7 +51,7 @@ async function init() {
 async function loadData() {
     groups = await Storage.loadGroups();
     const settings = await Storage.loadSettings();
-    rotationDelayInput.value = Math.round(settings.rotationDelay / 1000);
+    rotationDelayInput.value = Math.round(settings.rotationDelay / 60000);
 }
 
 function renderGroups() {
@@ -285,10 +285,10 @@ async function handleDeleteConfirm() {
 }
 
 async function handleSettingsChange() {
-    const delaySeconds = parseInt(rotationDelayInput.value, 10);
-    if (delaySeconds >= 10 && delaySeconds <= 600) {
+    const delayMinutes = parseInt(rotationDelayInput.value, 10);
+    if (delayMinutes >= 1 && delayMinutes <= 10) {
         const settings = await Storage.loadSettings();
-        settings.rotationDelay = delaySeconds * 1000;
+        settings.rotationDelay = delayMinutes * 60000;
         await Storage.saveSettings(settings);
     }
 }
