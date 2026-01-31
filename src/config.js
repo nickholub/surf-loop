@@ -121,11 +121,6 @@ export const DEFAULT_LOCATION_GROUPS = [
                 id: 'laniakea',
                 name: 'Laniakea',
                 url: 'https://www.surfline.com/surf-report/laniakea/5842041f4e65fad6a7708898?camId=58349bb9e411dc743a5d52a6'
-            },
-            {
-                id: 'honolua-bay',
-                name: 'Honolua Bay',
-                url: 'https://www.surfline.com/surf-report/honolua-bay/5842041f4e65fad6a7708897?camId=58349946e411dc743a5d52b0'
             }
         ]
     }
