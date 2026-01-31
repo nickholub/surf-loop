@@ -173,6 +173,15 @@ export const Storage = {
         return config;
     },
 
+    // Restore all settings to defaults
+    async restoreDefaults() {
+        await this.saveGroups(DEFAULT_LOCATION_GROUPS);
+        await this.saveSettings({
+            autoNavigationEnabled: true,
+            rotationDelay: 180000
+        });
+    },
+
     // Migrate from localStorage (if any old settings exist)
     async migrateFromLocalStorage() {
         try {
