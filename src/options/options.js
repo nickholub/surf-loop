@@ -35,6 +35,12 @@ const deleteMessage = document.getElementById('delete-message');
 const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
 const deleteCancelBtn = document.getElementById('delete-cancel-btn');
 
+// Restore Defaults Modal
+const restoreDefaultsBtn = document.getElementById('restore-defaults-btn');
+const restoreModal = document.getElementById('restore-modal');
+const restoreConfirmBtn = document.getElementById('restore-confirm-btn');
+const restoreCancelBtn = document.getElementById('restore-cancel-btn');
+
 // Icons
 const expandIcon = `<svg class="expand-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>`;
 const dragIcon = `<svg class="drag-handle" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="4" r="1.5"/><circle cx="11" cy="4" r="1.5"/><circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/><circle cx="5" cy="12" r="1.5"/><circle cx="11" cy="12" r="1.5"/></svg>`;
@@ -132,11 +138,17 @@ function setupEventListeners() {
     deleteCancelBtn.addEventListener('click', () => closeModal(deleteModal));
     deleteModal.querySelector('.close-btn').addEventListener('click', () => closeModal(deleteModal));
 
+    // Restore Defaults Modal
+    restoreDefaultsBtn.addEventListener('click', () => restoreModal.classList.add('active'));
+    restoreConfirmBtn.addEventListener('click', handleRestoreDefaults);
+    restoreCancelBtn.addEventListener('click', () => closeModal(restoreModal));
+    restoreModal.querySelector('.close-btn').addEventListener('click', () => closeModal(restoreModal));
+
     // Delegated events for dynamic elements
     groupsContainer.addEventListener('click', handleGroupsContainerClick);
 
     // Close modals on backdrop click
-    [groupModal, spotModal, deleteModal].forEach(modal => {
+    [groupModal, spotModal, deleteModal, restoreModal].forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal(modal);
         });
@@ -148,6 +160,7 @@ function setupEventListeners() {
             closeModal(groupModal);
             closeModal(spotModal);
             closeModal(deleteModal);
+            closeModal(restoreModal);
         }
     });
 }
@@ -320,6 +333,13 @@ async function handleImport(e) {
     };
     reader.readAsText(file);
     importFile.value = '';
+}
+
+async function handleRestoreDefaults() {
+    await Storage.restoreDefaults();
+    await loadData();
+    renderGroups();
+    closeModal(restoreModal);
 }
 
 // Drag and Drop

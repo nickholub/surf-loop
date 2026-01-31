@@ -32,6 +32,9 @@
                 <label for="rotation-delay">Rotation Delay (minutes)</label>
                 <input type="number" id="rotation-delay" min="1" max="10" value="3">
             </div>
+            <div class="setting-row">
+                <button id="restore-defaults-btn" class="btn btn-secondary">Restore Defaults</button>
+            </div>
         </section>
     </div>
 
@@ -86,6 +89,23 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="delete-cancel-btn">Cancel</button>
                 <button class="btn btn-danger" id="delete-confirm-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore Defaults Confirmation Modal -->
+    <div id="restore-modal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Restore Defaults</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>This will replace all your location groups and settings with the defaults. This cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="restore-cancel-btn">Cancel</button>
+                <button class="btn btn-danger" id="restore-confirm-btn">Restore</button>
             </div>
         </div>
     </div>
