@@ -5,19 +5,24 @@ import { KeyboardHandler } from './modules/keyboard.js';
 
 console.log('global init');
 
-$(function () {
+async function initialize() {
     console.log('DOM ready 2');
 
     const currentUrl = window.location.href;
 
-    // Initialize URL navigator
-    if (!URLNavigator.init(currentUrl)) {
+    // Initialize URL navigator (now async)
+    const initialized = await URLNavigator.init(currentUrl);
+    if (!initialized) {
         return;
     }
 
     // Start modules
-    AutoNavigation.loadState();
+    await AutoNavigation.loadState();
     FullscreenButtonDetector.start();
     KeyboardHandler.init();
-    AutoNavigation.start();
+    await AutoNavigation.start();
+}
+
+$(function () {
+    initialize();
 });
