@@ -1,8 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Surfline",
+  "name": "SurfLoop",
   "version": "1.0",
-  "description": "Surfline Webcam",
+  "description": "Fullscreen surf cam viewer with auto-rotation",
+  "permissions": ["storage"],
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
   "content_scripts": [
     {
       "matches": [

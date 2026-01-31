@@ -1,55 +1,76 @@
-import { CONFIG, URL_GROUPS, STORAGE_KEYS } from '../config.js';
+import { CONFIG } from '../config.js';
+import { Storage } from '../storage.js';
 import { State } from '../state.js';
 import { Toast } from '../utils/toast.js';
 
 export const URLNavigator = {
     urls: null,
     currentIndex: -1,
+    currentGroup: null,
 
-    init(currentUrl) {
-        // Determine which URL list to use
-        if (URL_GROUPS.SF_BAY.some(url => currentUrl.includes(url))) {
-            this.urls = URL_GROUPS.SF_BAY;
-        } else if (URL_GROUPS.HAWAII.some(url => currentUrl.includes(url))) {
-            this.urls = URL_GROUPS.HAWAII;
-        } else {
-            console.log('Current URL is not in the list of URLs', currentUrl);
-            return false;
+    async init(currentUrl) {
+        // Load groups from storage
+        const groups = await Storage.loadGroups();
+
+        // Find which group the current URL belongs to
+        for (const group of groups) {
+            const spotIndex = group.spots.findIndex(spot =>
+                currentUrl.includes(spot.url.split('?')[0]) ||
+                spot.url.includes(currentUrl.split('?')[0])
+            );
+
+            if (spotIndex !== -1) {
+                this.currentGroup = group;
+                this.urls = group.spots.map(spot => spot.url);
+                this.currentIndex = spotIndex;
+                return true;
+            }
         }
 
-        this.currentIndex = this.urls.findIndex(url => currentUrl.includes(url));
-
-        if (this.currentIndex === -1) {
-            console.log('Could not find current URL in the list');
-            return false;
-        }
-
-        return true;
+        console.log('Current URL is not in any configured group', currentUrl);
+        return false;
     },
 
     goToNext() {
+        if (!this.urls) return;
         console.log('Navigating to next page');
         const nextIndex = (this.currentIndex + 1) % this.urls.length;
         window.location.href = this.urls[nextIndex];
     },
 
     goToPrevious() {
+        if (!this.urls) return;
         console.log('Navigating to previous page');
         const prevIndex = (this.currentIndex - 1 + this.urls.length) % this.urls.length;
         window.location.href = this.urls[prevIndex];
+    },
+
+    getCurrentSpotName() {
+        if (this.currentGroup && this.currentIndex !== -1) {
+            return this.currentGroup.spots[this.currentIndex]?.name || null;
+        }
+        return null;
+    },
+
+    getCurrentGroupName() {
+        return this.currentGroup?.name || null;
     }
 };
 
 export const AutoNavigation = {
-    start() {
+    async start() {
         if (!State.autoNavigationEnabled || State.pageRotationTimeoutId) {
             return;
         }
 
+        // Load rotation delay from settings
+        const settings = await Storage.loadSettings();
+        const delay = settings.rotationDelay || CONFIG.PAGE_ROTATION_DELAY;
+
         State.pageRotationTimeoutId = setTimeout(() => {
             console.log('Navigating to next page after delay');
             URLNavigator.goToNext();
-        }, CONFIG.PAGE_ROTATION_DELAY);
+        }, delay);
 
         console.log('Auto navigation enabled');
     },
@@ -79,10 +100,14 @@ export const AutoNavigation = {
         }
     },
 
-    loadState() {
+    async loadState() {
         try {
-            const storedValue = localStorage.getItem(STORAGE_KEYS.AUTO_NAV_ENABLED);
-            if (storedValue === 'false') {
+            // Migrate from localStorage if needed
+            await Storage.migrateFromLocalStorage();
+
+            // Load settings from chrome.storage.sync
+            const settings = await Storage.loadSettings();
+            if (settings.autoNavigationEnabled === false) {
                 State.autoNavigationEnabled = false;
                 this.scheduleRefresh();
             }
@@ -91,17 +116,19 @@ export const AutoNavigation = {
         }
     },
 
-    persistState() {
+    async persistState() {
         try {
-            localStorage.setItem(STORAGE_KEYS.AUTO_NAV_ENABLED, String(State.autoNavigationEnabled));
+            const settings = await Storage.loadSettings();
+            settings.autoNavigationEnabled = State.autoNavigationEnabled;
+            await Storage.saveSettings(settings);
         } catch (error) {
             console.error('Error saving auto navigation state', error);
         }
     },
 
-    toggle() {
+    async toggle() {
         State.autoNavigationEnabled = !State.autoNavigationEnabled;
-        this.persistState();
+        await this.persistState();
 
         if (State.autoNavigationEnabled) {
             this.start();
