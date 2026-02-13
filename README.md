@@ -1,5 +1,9 @@
 # SurfLoop
 
+![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=googlechrome&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 A Chrome extension that transforms Surfline surf report pages into a fullscreen webcam display with automatic rotation between your favorite surf spots.
 
 ## Features
